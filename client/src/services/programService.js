@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5001/api';
+import api from './api.js';
 
 // सभी प्रोग्राम्स प्राप्त करें
 export const getAllPrograms = async () => {
   try {
-    const response = await axios.get(`${API_URL}/programs`);
+    const response = await api.get('/programs');
     return response.data;
   } catch (error) {
     console.error('Error fetching programs:', error);
@@ -16,7 +14,7 @@ export const getAllPrograms = async () => {
 // नया प्रोग्राम बनाएं
 export const createProgram = async (programData) => {
   try {
-    const response = await axios.post(`${API_URL}/programs`, programData);
+    const response = await api.post('/programs', programData);
     return response.data;
   } catch (error) {
     console.error('Error creating program:', error);
@@ -27,7 +25,7 @@ export const createProgram = async (programData) => {
 // प्रोग्राम को ID से प्राप्त करें
 export const getProgramById = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/programs/${id}`);
+    const response = await api.get(`/programs/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching program with id ${id}:`, error);
@@ -38,7 +36,7 @@ export const getProgramById = async (id) => {
 // प्रोग्राम को अपडेट करें
 export const updateProgram = async (id, programData) => {
   try {
-    const response = await axios.put(`${API_URL}/programs/${id}`, programData);
+    const response = await api.put(`/programs/${id}`, programData);
     return response.data;
   } catch (error) {
     console.error(`Error updating program with id ${id}:`, error);
@@ -49,7 +47,7 @@ export const updateProgram = async (id, programData) => {
 // प्रोग्राम को हटाएं
 export const deleteProgram = async (id) => {
   try {
-    const response = await axios.delete(`${API_URL}/programs/${id}`);
+    const response = await api.delete(`/programs/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error deleting program with id ${id}:`, error);

@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5001/api/districts';
+import api from './api.js';
 
 // Get all districts
 export const getAllDistricts = async () => {
   try {
-    const response = await axios.get(API_URL);
+    const response = await api.get('/districts');
     return response.data;
   } catch (error) {
     console.error('Error fetching districts:', error);
@@ -16,7 +14,7 @@ export const getAllDistricts = async () => {
 // Get districts by state
 export const getDistrictsByState = async (stateId) => {
   try {
-    const response = await axios.get(`${API_URL}/state/${stateId}`);
+    const response = await api.get(`/districts/state/${stateId}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching districts for state ${stateId}:`, error);
@@ -27,7 +25,7 @@ export const getDistrictsByState = async (stateId) => {
 // Get a single district
 export const getDistrict = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/${id}`);
+    const response = await api.get(`/districts/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching district with id ${id}:`, error);
@@ -38,7 +36,7 @@ export const getDistrict = async (id) => {
 // Create a new district
 export const createDistrict = async (districtData) => {
   try {
-    const response = await axios.post(API_URL, districtData);
+    const response = await api.post('/districts', districtData);
     return response.data;
   } catch (error) {
     console.error('Error creating district:', error);
@@ -49,7 +47,7 @@ export const createDistrict = async (districtData) => {
 // Update a district
 export const updateDistrict = async (id, districtData) => {
   try {
-    const response = await axios.put(`${API_URL}/${id}`, districtData);
+    const response = await api.put(`/districts/${id}`, districtData);
     return response.data;
   } catch (error) {
     console.error(`Error updating district with id ${id}:`, error);
@@ -60,7 +58,7 @@ export const updateDistrict = async (id, districtData) => {
 // Delete a district (soft delete)
 export const deleteDistrict = async (id) => {
   try {
-    const response = await axios.delete(`${API_URL}/${id}`);
+    const response = await api.delete(`/districts/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error deleting district with id ${id}:`, error);
@@ -74,7 +72,7 @@ export const uploadExcelFile = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
     
-    const response = await axios.post(`${API_URL}/upload`, formData, {
+    const response = await api.post('/districts/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

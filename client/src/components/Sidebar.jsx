@@ -9,7 +9,8 @@ const Sidebar = () => {
     preExam: false,
     postExam: false,
     reassessment: false,
-    result: false
+    result: false,
+    exam: false
   });
 
   const toggleMenu = (menu, e) => {
@@ -170,26 +171,26 @@ const Sidebar = () => {
                 <FaClipboardList className="mr-3" />
                 Generate Faculty Dummy ID Sticker
               </Link>
-              <Link to="/post-examination/set-internal-practical-marks" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+              <Link to="/post-examination/set-internal-practical-marks-entry" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
                 <FaClipboardList className="mr-3" />
                 Set Internal / Practical Marks Entry
               </Link>
-              <Link to="/post-examination/internal-practical-marks-lock" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+              <Link to="/post-examination/internal-practical-marks-entry-lock" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
                 <FaClipboardList className="mr-3" />
                 Internal / Practical Marks Entry Lock
+              </Link>
+              <Link to="/post-examination/marks-entry-checklist-report" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                <FaClipboardList className="mr-3" />
+                Marks Entry Checklist Report
+              </Link>
+              <Link to="/post-examination/set-gracing-condonation-rule" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                <FaClipboardList className="mr-3" />
+                Set Gracing / Condonation Rule
               </Link>
               <Link to="/post-examination/with-barcode-marks-entry" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
                 <FaClipboardList className="mr-3" />
                 With Barcode Marks Entry
-              </Link>
-              <Link to="/post-examination/marks-entry-checklist" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
-                <FaClipboardList className="mr-3" />
-                Marks Entry Checklist Report
-              </Link>
-              <Link to="/post-examination/set-gracing-condonation" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
-                <FaClipboardList className="mr-3" />
-                Set Gracing / Condonation Rule
-              </Link>
+              </Link> 
               <Link to="/post-examination/set-grade-class-rule" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
                 <FaClipboardList className="mr-3" />
                 Set Grade & Class Rule
@@ -228,7 +229,7 @@ const Sidebar = () => {
               </Link>
               <Link to="/reassessment/re-ass-application" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
                 <FaClipboardList className="mr-3" />
-                Re-ass Application
+                Re-Ass Application
               </Link>
               <Link to="/reassessment/set-faculty-reassessment" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
                 <FaClipboardList className="mr-3" />
@@ -263,7 +264,7 @@ const Sidebar = () => {
         </div>
 
         {/* 5. Result Menu */}
-        <div className="px-4 py-2 mt-6 mb-8">
+        <div className="px-4 py-2 mt-6">
           <div className="flex justify-between items-center cursor-pointer" onClick={(e) => toggleMenu('result', e)}>
             <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">5. Result</h3>
             <span>{openMenus.result ? '▼' : '►'}</span>
@@ -301,6 +302,22 @@ const Sidebar = () => {
               <Link to="/result/result-analysis-report" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
                 <FaClipboardList className="mr-3" />
                 Result Analysis Report
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* 6. Exam Menu */}
+        <div className="px-4 py-2 mt-6 mb-8">
+          <div className="flex justify-between items-center cursor-pointer" onClick={(e) => toggleMenu('exam', e)}>
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">6. Exam</h3>
+            <span>{openMenus.exam ? '▼' : '►'}</span>
+          </div>
+          {openMenus.exam && (
+            <div className="mt-2 space-y-1">
+              <Link to="/exam/datesheet" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                <FaCalendarAlt className="mr-3" />
+                Exam Datesheet
               </Link>
             </div>
           )}

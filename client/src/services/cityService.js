@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5001/api/cities';
+import api from './api.js';
 
 // Get all cities
 export const getAllCities = async () => {
   try {
-    const response = await axios.get(API_URL);
+    const response = await api.get('/cities');
     return response.data;
   } catch (error) {
     console.error('Error fetching cities:', error);
@@ -16,7 +14,7 @@ export const getAllCities = async () => {
 // Get cities by district
 export const getCitiesByDistrict = async (districtId) => {
   try {
-    const response = await axios.get(`${API_URL}/district/${districtId}`);
+    const response = await api.get(`/cities/district/${districtId}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching cities for district ${districtId}:`, error);
@@ -27,7 +25,7 @@ export const getCitiesByDistrict = async (districtId) => {
 // Get cities by state
 export const getCitiesByState = async (stateId) => {
   try {
-    const response = await axios.get(`${API_URL}/state/${stateId}`);
+    const response = await api.get(`/cities/state/${stateId}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching cities for state ${stateId}:`, error);
@@ -38,7 +36,7 @@ export const getCitiesByState = async (stateId) => {
 // Get a single city
 export const getCity = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/${id}`);
+    const response = await api.get(`/cities/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching city with id ${id}:`, error);
@@ -49,7 +47,7 @@ export const getCity = async (id) => {
 // Create a new city
 export const createCity = async (cityData) => {
   try {
-    const response = await axios.post(API_URL, cityData);
+    const response = await api.post('/cities', cityData);
     return response.data;
   } catch (error) {
     console.error('Error creating city:', error);
@@ -60,7 +58,7 @@ export const createCity = async (cityData) => {
 // Update a city
 export const updateCity = async (id, cityData) => {
   try {
-    const response = await axios.put(`${API_URL}/${id}`, cityData);
+    const response = await api.put(`/cities/${id}`, cityData);
     return response.data;
   } catch (error) {
     console.error(`Error updating city with id ${id}:`, error);
@@ -71,7 +69,7 @@ export const updateCity = async (id, cityData) => {
 // Delete a city (soft delete)
 export const deleteCity = async (id) => {
   try {
-    const response = await axios.delete(`${API_URL}/${id}`);
+    const response = await api.delete(`/cities/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error deleting city with id ${id}:`, error);
@@ -85,7 +83,7 @@ export const uploadExcelFile = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
     
-    const response = await axios.post(`${API_URL}/upload`, formData, {
+    const response = await api.post('/cities/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

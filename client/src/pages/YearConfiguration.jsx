@@ -24,9 +24,16 @@ const YearConfiguration = () => {
   const fetchYearConfigurations = async () => {
     try {
       const response = await axios.get('/api/year-configurations');
-      setYearConfigs(response.data);
+      // Ensure response.data is an array before setting state
+      if (Array.isArray(response.data)) {
+        setYearConfigs(response.data);
+      } else {
+        console.error('Expected array but got:', typeof response.data, response.data);
+        setYearConfigs([]);
+      }
     } catch (error) {
       console.error('Error fetching year configurations:', error);
+      setYearConfigs([]); // Set empty array on error
     }
   };
 
@@ -105,9 +112,11 @@ const YearConfiguration = () => {
     }
   };
 
-  const filteredConfigs = yearConfigs.filter(config => 
-    config.academicYear.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredConfigs = Array.isArray(yearConfigs) 
+    ? yearConfigs.filter(config => 
+        config.academicYear.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
 
   const formatDate = (dateString) => {
     if (!dateString) return '';

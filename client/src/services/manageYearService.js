@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5001/api/manage-year';
+import api from './api.js';
 
 // Get all active years
 export const getYears = async () => {
   try {
-    const response = await axios.get(API_URL);
+    const response = await api.get('/manage-year');
     return response.data;
   } catch (error) {
     console.error('Error fetching years:', error);
@@ -16,7 +14,7 @@ export const getYears = async () => {
 // Get all years including deleted ones
 export const getAllYears = async () => {
   try {
-    const response = await axios.get(`${API_URL}/all`);
+    const response = await api.get('/manage-year/all');
     return response.data;
   } catch (error) {
     console.error('Error fetching all years:', error);
@@ -27,7 +25,7 @@ export const getAllYears = async () => {
 // Create a new year
 export const createYear = async (yearData) => {
   try {
-    const response = await axios.post(API_URL, yearData);
+    const response = await api.post('/manage-year', yearData);
     return response.data;
   } catch (error) {
     console.error('Error creating year:', error);
@@ -38,7 +36,7 @@ export const createYear = async (yearData) => {
 // Update an existing year
 export const updateYear = async (id, yearData) => {
   try {
-    const response = await axios.put(`${API_URL}/${id}`, yearData);
+    const response = await api.put(`/manage-year/${id}`, yearData);
     return response.data;
   } catch (error) {
     console.error('Error updating year:', error);
@@ -49,7 +47,7 @@ export const updateYear = async (id, yearData) => {
 // Toggle year active status
 export const toggleYearStatus = async (id) => {
   try {
-    const response = await axios.patch(`${API_URL}/${id}/toggle`);
+    const response = await api.patch(`/manage-year/${id}/toggle`);
     return response.data;
   } catch (error) {
     console.error('Error toggling year status:', error);
@@ -60,7 +58,7 @@ export const toggleYearStatus = async (id) => {
 // Upload Excel file
 export const uploadExcel = async (formData) => {
   try {
-    const response = await axios.post(`${API_URL}/upload`, formData, {
+    const response = await api.post('/manage-year/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

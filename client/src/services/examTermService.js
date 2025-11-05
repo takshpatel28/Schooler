@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api/examterms';
+import api from './api.js';
 
 // Get all exam terms
 export const getAllExamTerms = async () => {
   try {
-    const response = await axios.get(API_URL);
+    const response = await api.get('/examterms');
     return response.data;
   } catch (error) {
     console.error('Error fetching exam terms:', error);
@@ -16,7 +14,7 @@ export const getAllExamTerms = async () => {
 // Create a new exam term
 export const createExamTerm = async (examTermData) => {
   try {
-    const response = await axios.post(API_URL, examTermData);
+    const response = await api.post('/examterms', examTermData);
     return response.data;
   } catch (error) {
     console.error('Error creating exam term:', error);
@@ -27,7 +25,7 @@ export const createExamTerm = async (examTermData) => {
 // Update an exam term
 export const updateExamTerm = async (id, examTermData) => {
   try {
-    const response = await axios.put(`${API_URL}/${id}`, examTermData);
+    const response = await api.put(`/examterms/${id}`, examTermData);
     return response.data;
   } catch (error) {
     console.error('Error updating exam term:', error);
@@ -38,7 +36,7 @@ export const updateExamTerm = async (id, examTermData) => {
 // Delete an exam term
 export const deleteExamTerm = async (id) => {
   try {
-    const response = await axios.delete(`${API_URL}/${id}`);
+    const response = await api.delete(`/examterms/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error deleting exam term:', error);
@@ -49,7 +47,7 @@ export const deleteExamTerm = async (id) => {
 // Upload Excel file
 export const uploadExcelFile = async (formData) => {
   try {
-    const response = await axios.post(`${API_URL}/upload`, formData, {
+    const response = await api.post('/examterms/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
