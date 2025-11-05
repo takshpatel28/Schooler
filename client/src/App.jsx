@@ -32,6 +32,7 @@ import StudentResultProcess from './pages/StudentResultProcess';
 import ResultDeclarationDetail from './pages/ResultDeclarationDetail';
 import NotificationReport from './pages/NotificationReport';
 import PostExaminationReport from './pages/PostExaminationReport';
+import ReportsSearch from './pages/ReportsSearch';
 import SetReassessmentFees from './pages/SetReassessmentFees';
 import ReAssApplication from './pages/ReAssApplication';
 import ReAssMarksEntry from './pages/ReAssMarksEntry';
@@ -98,6 +99,7 @@ function App() {
               <Route path="/post-examination/with-barcode-marks-entry" element={<WithBarcodeMarksEntry />} />
             <Route path="/post-examination/notification-report" element={<NotificationReport />} />
             <Route path="/post-examination/post-examination-report" element={<PostExaminationReport />} />
+            <Route path="/reports/search" element={<ReportsSearch />} />
                   <Route path="/reassessment/set-reassessment-fees" element={<SetReassessmentFees />} />
               <Route path="/reassessment/re-ass-application" element={<ReAssApplication />} />
               <Route path="/reassessment/re-ass-marks-entry" element={<ReAssMarksEntry />} />

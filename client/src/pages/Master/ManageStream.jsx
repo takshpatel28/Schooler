@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
-import { FaPlus, FaEdit, FaTrash, FaUpload, FaDownload, FaSearch } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaPlus, FaEdit, FaTrash, FaUpload, FaDownload, FaSearch, FaFilter, FaChartBar, FaFileExport, FaSync, FaEye, FaCheckSquare, FaSquare, FaList, FaTimes } from 'react-icons/fa';
+import { toast, Toaster } from 'react-hot-toast';
+import DataSummary from '../../components/DataSummary';
+import { FaToggleOn, FaToggleOff, FaUniversity, FaLayerGroup } from 'react-icons/fa';
 
 const ManageStream = () => {
   const [formData, setFormData] = useState({
@@ -43,6 +46,17 @@ const ManageStream = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [streamToDelete, setStreamToDelete] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    program: '',
+    branch: '',
+    status: '',
+    instituteId: ''
+  });
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedStreams, setSelectedStreams] = useState([]);
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  const [showStatsModal, setShowStatsModal] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -50,6 +64,102 @@ const ManageStream = () => {
       ...formData,
       [name]: type === 'checkbox' ? checked : value
     });
+  };
+
+  const handleFilterChange = (field, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      program: '',
+      branch: '',
+      status: '',
+      instituteId: ''
+    });
+  };
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedStreams(filteredStreams.map(stream => stream.id));
+    } else {
+      setSelectedStreams([]);
+    }
+  };
+
+  const handleSelectStream = (id) => {
+    setSelectedStreams(prev => 
+      prev.includes(id) 
+        ? prev.filter(streamId => streamId !== id)
+        : [...prev, id]
+    );
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedStreams.length === 0) {
+      toast.error('Please select streams to delete');
+      return;
+    }
+    
+    if (window.confirm(`Are you sure you want to delete ${selectedStreams.length} streams?`)) {
+      const updatedStreams = streams.filter(stream => !selectedStreams.includes(stream.id));
+      setStreams(updatedStreams);
+      setSelectedStreams([]);
+      toast.success(`${selectedStreams.length} streams deleted successfully`);
+    }
+  };
+
+  const handleBulkExport = () => {
+    const selectedData = streams.filter(stream => selectedStreams.includes(stream.id));
+    const csvContent = convertToCSV(selectedData);
+    downloadFile(csvContent, 'streams_export.csv', 'text/csv');
+    toast.success('Export completed successfully');
+  };
+
+  const convertToCSV = (data) => {
+    const headers = ['Stream ID', 'Stream Name', 'Stream Code', 'Short Name', 'Program', 'Branch', 'Status', 'Institute ID'];
+    const rows = data.map(stream => [
+      stream.streamId,
+      stream.streamName,
+      stream.streamCode,
+      stream.streamShortName,
+      stream.streamProgram,
+      stream.streamBranch,
+      stream.isActive ? 'Active' : 'Inactive',
+      stream.instituteId
+    ]);
+    return [headers, ...rows].map(row => row.join(',')).join('\n');
+  };
+
+  const downloadFile = (content, filename, contentType) => {
+    const blob = new Blob([content], { type: contentType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const getStats = () => {
+    const total = streams.length;
+    const active = streams.filter(s => s.isActive).length;
+    const inactive = total - active;
+    const programs = [...new Set(streams.map(s => s.streamProgram))].length;
+    const branches = [...new Set(streams.map(s => s.streamBranch))].length;
+    
+    return { total, active, inactive, programs, branches };
   };
 
   const handleSubmit = (e) => {
@@ -82,6 +192,8 @@ const ManageStream = () => {
       isActive: true,
       instituteId: ''
     });
+    
+    toast.success(editMode ? 'Stream updated successfully!' : 'Stream added successfully!');
   };
 
   const handleEdit = (id) => {
@@ -102,6 +214,7 @@ const ManageStream = () => {
     setStreams(updatedStreams);
     setShowDeleteModal(false);
     setStreamToDelete(null);
+    toast.success('Stream deleted successfully!');
   };
 
   const cancelDelete = () => {
@@ -113,26 +226,200 @@ const ManageStream = () => {
     const file = e.target.files[0];
     if (file) {
       // In a real application, you would process the Excel file here
-      alert('Excel file uploaded: ' + file.name);
+      toast.success('Excel file uploaded: ' + file.name);
       // Reset the file input
       e.target.value = null;
     }
   };
 
-  const filteredStreams = streams.filter(stream => 
-    stream.streamId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    stream.streamName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    stream.streamCode.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredStreams = streams.filter(stream => {
+    const matchesSearch = 
+      stream.streamName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      stream.streamCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      stream.streamShortName.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesProgram = !filters.program || stream.streamProgram === filters.program;
+    const matchesBranch = !filters.branch || stream.streamBranch.toLowerCase().includes(filters.branch.toLowerCase());
+    const matchesStatus = !filters.status || (filters.status === 'active' ? stream.isActive : !stream.isActive);
+    const matchesInstitute = !filters.instituteId || stream.instituteId.toLowerCase().includes(filters.instituteId.toLowerCase());
+    
+    return matchesSearch && matchesProgram && matchesBranch && matchesStatus && matchesInstitute;
+  });
+
+  const sortedStreams = [...filteredStreams].sort((a, b) => {
+    if (!sortConfig.key) return 0;
+    
+    const aValue = a[sortConfig.key];
+    const bValue = b[sortConfig.key];
+    
+    if (aValue < bValue) {
+      return sortConfig.direction === 'asc' ? -1 : 1;
+    }
+    if (aValue > bValue) {
+      return sortConfig.direction === 'asc' ? 1 : -1;
+    }
+    return 0;
+  });
 
   return (
+    <div className="min-h-screen bg-gray-50">
+      <Toaster position="top-right" />
     <div className="w-full bg-gray-50 min-h-screen">
       <div className="w-full bg-white shadow-sm py-4 px-6 flex justify-between items-center">
         <h1 className="text-xl font-medium text-gray-800">Manage Year / Manage Stream</h1>
-        <button className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-          <FaUpload className="mr-2" /> Upload Excel
-        </button>
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => setShowStatsModal(true)}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+          >
+            <FaChartBar />
+            <span>Statistics</span>
+          </button>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search streams..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <FaSearch className="absolute left-3 top-3 text-gray-400" />
+          </div>
+
+        {/* Advanced Filters Panel */}
+        {showFilters && (
+          <div className="bg-white border-b px-6 py-4">
+            <div className="flex flex-wrap gap-4 items-center justify-between">
+              <div className="flex flex-wrap gap-4">
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium text-gray-700 mb-1">Program</label>
+                  <select
+                    value={filters.program}
+                    onChange={(e) => handleFilterChange('program', e.target.value)}
+                    className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">All Programs</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Medical">Medical</option>
+                    <option value="Management">Management</option>
+                    <option value="Arts">Arts</option>
+                    <option value="Science">Science</option>
+                  </select>
+                </div>
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium text-gray-700 mb-1">Branch</label>
+                  <input
+                    type="text"
+                    placeholder="Filter by branch..."
+                    value={filters.branch}
+                    onChange={(e) => handleFilterChange('branch', e.target.value)}
+                    className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <select
+                    value={filters.status}
+                    onChange={(e) => handleFilterChange('status', e.target.value)}
+                    className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium text-gray-700 mb-1">Institute ID</label>
+                  <input
+                    type="text"
+                    placeholder="Filter by institute ID..."
+                    value={filters.instituteId}
+                    onChange={(e) => handleFilterChange('instituteId', e.target.value)}
+                    className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <button
+                onClick={clearFilters}
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center space-x-2"
+              >
+                <FaTimes />
+                <span>Clear Filters</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Bulk Actions Panel */}
+        {showBulkActions && (
+          <div className="bg-purple-50 border-b px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <span className="text-sm font-medium text-purple-700">
+                  {selectedStreams.length} streams selected
+                </span>
+                <button
+                  onClick={handleBulkDelete}
+                  disabled={selectedStreams.length === 0}
+                  className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  <FaTrash className="inline mr-1" />
+                  Delete Selected
+                </button>
+                <button
+                  onClick={handleBulkExport}
+                  disabled={selectedStreams.length === 0}
+                  className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  <FaDownload className="inline mr-1" />
+                  Export Selected
+                </button>
+              </div>
+              <button
+                onClick={() => setShowBulkActions(false)}
+                className="text-purple-600 hover:text-purple-800"
+              >
+                <FaTimes />
+              </button>
+            </div>
+          </div>
+        )}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center space-x-2"
+          >
+            <FaFilter />
+            <span>Filters</span>
+          </button>
+          <button
+            onClick={() => setShowBulkActions(!showBulkActions)}
+            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+          >
+            <FaList />
+            <span>Bulk Actions</span>
+          </button>
+          <button className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+            <FaUpload className="mr-2" /> Upload Excel
+          </button>
+        </div>
       </div>
+      {(() => {
+        const s = getStats();
+        return (
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <DataSummary
+              title="Stream Overview"
+              stats={[
+                { label: 'Total Streams', value: s.total, icon: FaLayerGroup },
+                { label: 'Active', value: s.active, icon: FaToggleOn, iconBg: 'bg-green-100', iconColor: 'text-green-600' },
+                { label: 'Inactive', value: s.inactive, icon: FaToggleOff, iconBg: 'bg-red-100', iconColor: 'text-red-600' },
+                { label: 'Programs', value: s.programs, icon: FaLayerGroup },
+                { label: 'Branches', value: s.branches, icon: FaUniversity },
+              ]}
+            />
+          </div>
+        );
+      })()}
       
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="bg-white rounded-md shadow-sm mb-6">
@@ -381,6 +668,7 @@ const ManageStream = () => {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };

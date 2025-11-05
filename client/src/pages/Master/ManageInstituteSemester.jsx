@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FaSearch, FaEdit, FaTrashAlt, FaPlus } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import DataSummary from '../../components/DataSummary';
+import { FaCalendarCheck, FaCalendarTimes, FaUniversity, FaLayerGroup } from 'react-icons/fa';
 
 const ManageInstituteSemester = () => {
   // State for form data
@@ -163,6 +165,21 @@ const ManageInstituteSemester = () => {
     toast.info('Export functionality would be implemented here.');
   };
 
+  const getStats = () => {
+    const total = instituteSemesters.length;
+    const active = instituteSemesters.filter(s => s.isActive).length;
+    const inactive = total - active;
+    const institutes = new Set(instituteSemesters.map(s => s.instituteId)).size;
+    const specializations = new Set(instituteSemesters.map(s => s.specialization)).size;
+    const now = new Date();
+    const running = instituteSemesters.filter(s => {
+      const sd = new Date(s.startDate);
+      const ed = new Date(s.endDate);
+      return sd <= now && now <= ed;
+    }).length;
+    return { total, active, inactive, institutes, specializations, running };
+  };
+
   return (
     <div className="p-4">
       {/* Header */}
@@ -175,6 +192,25 @@ const ManageInstituteSemester = () => {
           <FaPlus className="mr-2" /> Upload Excel
         </button>
       </div>
+
+      {/* Summary */}
+      {(() => {
+        const s = getStats();
+        return (
+          <DataSummary
+            title="Institute Semester Overview"
+            stats={[
+              { label: 'Total Semesters', value: s.total, icon: FaLayerGroup },
+              { label: 'Active', value: s.active, icon: FaCalendarCheck, iconBg: 'bg-green-100', iconColor: 'text-green-600' },
+              { label: 'Inactive', value: s.inactive, icon: FaCalendarTimes, iconBg: 'bg-red-100', iconColor: 'text-red-600' },
+              { label: 'Running Now', value: s.running, icon: FaCalendarCheck, iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
+              { label: 'Institutes', value: s.institutes, icon: FaUniversity },
+              { label: 'Specializations', value: s.specializations, icon: FaLayerGroup },
+            ]}
+            onRefresh={() => toast.success('Summary refreshed')}
+          />
+        );
+      })()}
 
       {/* Form */}
       <div className="bg-white p-6 rounded-md shadow-sm mb-6">

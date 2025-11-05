@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaGraduationCap, FaCalendarAlt, FaChalkboardTeacher, FaClipboardList, 
-  FaUniversity, FaMapMarkerAlt, FaUsers, FaUserShield, FaEdit } from 'react-icons/fa';
+  FaUniversity, FaMapMarkerAlt, FaUsers, FaUserShield, FaEdit, FaChartBar, FaSearch } from 'react-icons/fa';
 
 const Sidebar = () => {
   const [openMenus, setOpenMenus] = useState({
     master: false,
     preExam: false,
     postExam: false,
+    reports: false,
     reassessment: false,
     result: false,
     exam: false
@@ -210,6 +211,22 @@ const Sidebar = () => {
               <Link to="/post-examination/post-examination-report" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
                 <FaClipboardList className="mr-3" />
                 Post Examination Report
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Reports Menu */}
+        <div className="px-4 py-2 mt-6">
+          <div className="flex justify-between items-center cursor-pointer" onClick={(e) => toggleMenu('reports', e)}>
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Reports</h3>
+            <span>{openMenus.reports ? '▼' : '►'}</span>
+          </div>
+          {openMenus.reports && (
+            <div className="mt-2 space-y-1">
+              <Link to="/reports/search" className="flex items-center px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                <FaSearch className="mr-3" />
+                Reports Search
               </Link>
             </div>
           )}

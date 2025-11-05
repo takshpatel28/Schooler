@@ -21,7 +21,6 @@ const marksEntryChecklistRoutes = require('./routes/marksEntryChecklistRoutes');
 const gracingCondonationRuleRoutes = require('./routes/gracingCondonationRule');
 const reassessmentRoutes = require('./routes/reassessmentRoutes');
 const facultyRoutes = require('./routes/facultyRoutes');
-const examDatesheetRoutes = require('./routes/examDatesheetRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -105,7 +104,6 @@ app.use('/api/marks-entry-checklist', marksEntryChecklistRoutes);
 app.use('/api/gracing-condonation-rule', gracingCondonationRuleRoutes);
 app.use('/api/reassessments', reassessmentRoutes);
 app.use('/api/faculties', facultyRoutes);
-app.use('/api/exam-datesheet', examDatesheetRoutes);
 
 // Default route
 app.get('/', (req, res) => {

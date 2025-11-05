@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FaEdit, FaTrash, FaUpload, FaDownload, FaSearch } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaUpload, FaDownload, FaSearch, FaUniversity, FaLayerGroup, FaToggleOn, FaToggleOff } from 'react-icons/fa';
+import DataSummary from '../../components/DataSummary';
 
 const ManageSemesterProgram = () => {
   const [formData, setFormData] = useState({
@@ -126,6 +127,15 @@ const ManageSemesterProgram = () => {
     program.semesterProgramShortCode.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const getStats = () => {
+    const total = semesterPrograms.length;
+    const active = semesterPrograms.filter(p => p.isActive).length;
+    const inactive = total - active;
+    const institutes = new Set(semesterPrograms.map(p => p.instituteId)).size;
+    const years = new Set(semesterPrograms.map(p => p.yearId)).size;
+    return { total, active, inactive, institutes, years };
+  };
+
   return (
     <div className="w-full bg-gray-50 min-h-screen">
       <div className="w-full bg-white shadow-sm py-4 px-6 flex justify-between items-center">
@@ -134,6 +144,23 @@ const ManageSemesterProgram = () => {
           <FaUpload className="mr-2" /> Upload Excel
         </button>
       </div>
+      {(() => {
+        const s = getStats();
+        return (
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <DataSummary
+              title="Semester Program Overview"
+              stats={[
+                { label: 'Total Programs', value: s.total, icon: FaLayerGroup },
+                { label: 'Active', value: s.active, icon: FaToggleOn, iconBg: 'bg-green-100', iconColor: 'text-green-600' },
+                { label: 'Inactive', value: s.inactive, icon: FaToggleOff, iconBg: 'bg-red-100', iconColor: 'text-red-600' },
+                { label: 'Institutes', value: s.institutes, icon: FaUniversity },
+                { label: 'Years', value: s.years, icon: FaLayerGroup },
+              ]}
+            />
+          </div>
+        );
+      })()}
       
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="bg-white rounded-md shadow-sm mb-6">
